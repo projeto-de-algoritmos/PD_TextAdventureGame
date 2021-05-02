@@ -1,9 +1,9 @@
 package game.models;
 
 import game.Acao;
-import game.TipoAcao;
 import game.models.item.Item;
 import game.models.item.ItemLegivel;
+import services.SugestaoEscrita;
 
 public class InterpreteJogador {
 
@@ -38,6 +38,7 @@ public class InterpreteJogador {
        }
 
        if(acao == null){
+           SugestaoEscrita.checkAcao(acaoEscolhida);
            System.out.println("Faça alguma coisa !");
            return Acao.NADA;
        }

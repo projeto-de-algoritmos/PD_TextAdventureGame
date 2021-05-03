@@ -13,12 +13,6 @@ public final class SugestaoEscrita {
 
     private static ArrayList<String> locais = new ArrayList();
 
-    private static final Set<Character> vowels = new HashSet<>(Arrays.asList(new Character[] { 'a', 'e', 'i', 'o', 'u' }));
-
-    private static final Set<Character> consonants = new HashSet<>(Arrays.asList(new Character[] { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' }));
-
-    private static final Set<Character> numbers = new HashSet<>(Arrays.asList(new Character[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }));
-
     private static ArrayList<String>  inicializarListaAcoes(){
         ArrayList<String> acoes = new ArrayList<>();
 

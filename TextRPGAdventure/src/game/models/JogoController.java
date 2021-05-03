@@ -5,6 +5,7 @@ import grafo.Aresta;
 import grafo.Grafo;
 import grafo.navegacao.Navegacao;
 import grafo.Vertice;
+import services.SugestaoEscrita;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -44,7 +45,8 @@ public final class JogoController {
             System.out.println("=============================================================");
             // 0 - Printar turno atual
             System.out.println("Turno atual: " + turnoAtualJogo);
-            System.out.println("Local do boss: " + chefe.getAreaAtual().getNome());
+            //System.out.println("Local do personagem: " + jogador.getAreaAtual().getNome());
+            //System.out.println("Local do boss: " + chefe.getAreaAtual().getNome());
 
             // 1 - identifica a área atual
             Area areaAtual = identificarAreaAtual();
@@ -61,7 +63,7 @@ public final class JogoController {
             // 2 - verifica e executa ação desejada - interprete
 
             // 3 - Realiza ações do chefe
-            if(chefe != null){
+           if(chefe != null){
                 if(turnoAtualChefe <= turnoAtualJogo){
                     chefe.agir();
                 }
@@ -135,6 +137,7 @@ public final class JogoController {
 
     public void addArea(Area area){
         this.grafo.addVertice(area);
+        SugestaoEscrita.addLocal(area.getNome());
     }
 
     public void conectarArea(int distancia, Area origem, Area destino){

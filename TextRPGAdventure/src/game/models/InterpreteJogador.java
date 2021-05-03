@@ -5,6 +5,11 @@ import game.models.item.Item;
 import game.models.item.ItemLegivel;
 import services.SugestaoEscrita;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+
 public class InterpreteJogador {
 
     public Acao interpretarString(String string) {
@@ -13,40 +18,58 @@ public class InterpreteJogador {
             return Acao.NADA;
         }
 
-        return agir(string.toLowerCase().split(" "));
+        List<String> comandos = Arrays.asList(string.toLowerCase().split(" "));
+
+        String acao = comandos.get(0);
+
+        //concatenar próximas palavras
+        String complemento = " ";
+        for(int i = 1; i < comandos.size(); i++){
+            complemento += " " + comandos.get(i);
+        }
+
+        List<String> novosComandos = new ArrayList<>();
+
+        novosComandos.add(acao);
+        novosComandos.add(complemento.trim());
+
+        return agir(novosComandos);
     }
 
-    private Acao agir(String[] comandos) throws ArrayIndexOutOfBoundsException {
+    private Acao agir(List<String> comandos) throws ArrayIndexOutOfBoundsException {
 
-        if(comandos == null || comandos.length == 0){
+        if(comandos == null || comandos.size() == 0){
             System.out.println("Faça alguma coisa !");
             return Acao.NADA;
         }
 
-        String acaoEscolhida = comandos[0];
+        String acaoEscolhida = comandos.get(0);
         Acao acao = null;
 
-       out:{
-           for(Acao a : Acao.values()){
-               for(String alias: a.getAliases()){
-                   if(acaoEscolhida.compareTo(alias) == 0){
-                       acao = a;
-                       break out;
-                   }
-               }
-           }
-       }
 
-       if(acao == null){
-           SugestaoEscrita.checkAcao(acaoEscolhida);
+        String acaoProvavel = SugestaoEscrita.checkAcao(acaoEscolhida);
+
+
+        out:{
+            for(Acao a : Acao.values()){
+                for(String alias: a.getAliases()){
+                    if(acaoProvavel.compareTo(alias) == 0){
+                        acao = a;
+                        break out;
+                    }
+                }
+            }
+        }
+
+        if(acao == null){
            System.out.println("Faça alguma coisa !");
            return Acao.NADA;
        }
 
        switch (acao.getTipoAcao()){
            case PEGAR:
-               if(comandos.length > 1){
-                   String nomeItem = comandos[1];
+               if(comandos.size() > 1){
+                   String nomeItem = comandos.get(1);
 
                    Item item = JogoController.getJogo().coletarItem(nomeItem);
 
@@ -64,8 +87,8 @@ public class InterpreteJogador {
 
                break;
            case USAR:
-               if(comandos.length > 1){
-                   String nomeItem = comandos[1];
+               if(comandos.size() > 1){
+                   String nomeItem = comandos.get(1);
 
                    Item item = JogoController.getJogo().utilizarItemInventario(nomeItem);
 
@@ -82,8 +105,8 @@ public class InterpreteJogador {
 
                break;
            case LER:
-               if(comandos.length > 1){
-                   String nomeItem = comandos[1];
+               if(comandos.size() > 1){
+                   String nomeItem = comandos.get(1);
 
                    Item item = JogoController.getJogo().utilizarItemInventario(nomeItem);
 
@@ -103,13 +126,17 @@ public class InterpreteJogador {
 
                break;
            case ANDAR:
-               if(comandos.length > 1){
-                   String nomeSala = comandos[1];
+               if(comandos.size() > 1){
+                   String nomeSalaProvavel = SugestaoEscrita.checkLocal(comandos.get(1));
 
                    Area salaAtual = JogoController.getJogo().getAreaAtualJogador();
 
-                   Area areaIndicada = JogoController.getJogo().identificarAreaConectada(salaAtual, nomeSala);
-                   Integer distanciaEntreSalas = JogoController.getJogo().identificaDistancia(salaAtual, areaIndicada);
+                   Area areaIndicada = JogoController.getJogo().identificarAreaConectada(salaAtual, nomeSalaProvavel);
+                   Integer distanciaEntreSalas = null;
+
+                   if(areaIndicada != null) {
+                       distanciaEntreSalas = JogoController.getJogo().identificaDistancia(salaAtual, areaIndicada);
+                   }
 
                    if(areaIndicada != null && distanciaEntreSalas != null){
                        JogoController.getJogo().incrementarTurnosJogador(distanciaEntreSalas);

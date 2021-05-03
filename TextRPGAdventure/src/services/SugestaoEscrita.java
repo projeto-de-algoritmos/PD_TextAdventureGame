@@ -1,25 +1,44 @@
 package services;
 
-import java.util.ArrayList;
-import java.util.List;
+import game.Acao;
+
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class SugestaoEscrita {
-    static private final int CUSTO_GAP = 1;
+public final class SugestaoEscrita {
+    static private final Double CUSTO_GAP = 1.0;
 
-    static final String[] acoes = {"olhar", "pegar", "catar", "segurar", "coletar", "andar", "mover", "locomover",
-            "ir", "usar", "utilizar", "ler", "folhear",};
+    private static final ArrayList<String> acoes = inicializarListaAcoes();
 
-    static ArrayList<String> locais = new ArrayList();
+    private static ArrayList<String> locais = new ArrayList();
 
-    public String checkLocal(String local) {
+    private static final Set<Character> vowels = new HashSet<>(Arrays.asList(new Character[] { 'a', 'e', 'i', 'o', 'u' }));
+
+    private static final Set<Character> consonants = new HashSet<>(Arrays.asList(new Character[] { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' }));
+
+    private static final Set<Character> numbers = new HashSet<>(Arrays.asList(new Character[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }));
+
+    private static ArrayList<String>  inicializarListaAcoes(){
+        ArrayList<String> acoes = new ArrayList<>();
+
+        for(Acao a: Acao.values()){
+            for(String alias: a.getAliases()){
+                acoes.add(alias);
+            }
+        }
+
+        return acoes;
+    }
+
+    public static String checkLocal(String local) {
         String localMaisProvavel = null;
 
-        System.out.println("Você quis dizer " + localMaisProvavel + "?");
-
         if (!locais.isEmpty()) {
-            localMaisProvavel = encontraStringMaisProvavel(local, (String[]) locais.toArray());
+            localMaisProvavel = encontraStringMaisProvavel(local, locais);
         }
+
+        System.out.println("Você quis dizer " + localMaisProvavel + "?");
 
         return localMaisProvavel;
     }
@@ -36,22 +55,22 @@ public class SugestaoEscrita {
         locais.add(local);
     }
 
-    static private String encontraStringMaisProvavel(String string, String[] opcoes) {
+    static private String encontraStringMaisProvavel(String string, ArrayList<String> opcoes) {
         String acaoMaisProvavel = "";
         double menorPenalidade = 99999;
 
-        for (int i = 0; i < opcoes.length; i++) {
-            String acaoComparada = opcoes[i];
-            double[][] matriz = new double[string.length()][acaoComparada.length()];
-            int[][][] indexesPredecessores = new int[string.length()][acaoComparada.length()][2];
+        for (String opcao: opcoes) {
 
-            inicializaMatriz(string, acaoComparada, matriz, indexesPredecessores);
-            preencheMatriz(string, acaoComparada, matriz, indexesPredecessores);
+            double[][] matriz = new double[string.length()][opcao.length()];
+            int[][][] indexesPredecessores = new int[string.length()][opcao.length()][2];
 
-            double penalidade = matriz[string.length() - 1][acaoComparada.length() - 1];
+            inicializaMatriz(string, opcao, matriz, indexesPredecessores);
+            preencheMatriz(string, opcao, matriz, indexesPredecessores);
+
+            double penalidade = matriz[string.length() - 1][opcao.length() - 1];
             if (penalidade < menorPenalidade) {
                 menorPenalidade = penalidade;
-                acaoMaisProvavel = acaoComparada;
+                acaoMaisProvavel = opcao;
             }
         }
 
@@ -64,6 +83,7 @@ public class SugestaoEscrita {
                 double penalidadeComAlinhamento = getPenalidade(acao.charAt(i), acaoComparada.charAt(j)) + matriz[i - 1][j - 1];
                 double acaoComGap = CUSTO_GAP + matriz[i - 1][j];
                 double acaoComparadaComGap = CUSTO_GAP + matriz[i][j - 1];
+
 
                 double menorPenalidade = min(penalidadeComAlinhamento, acaoComGap, acaoComparadaComGap);
 
@@ -89,11 +109,13 @@ public class SugestaoEscrita {
     }
 
     private static double getPenalidade(char char1, char char2) {
+
         if (char1 == char2) {
             return 0;
         } else {
             return DistanciaEntreTeclas.distanciaEntreTeclas(char1, char2);
         }
+
     }
 
     private static void inicializaMatriz(String acao, String acaoComparada, double[][] matriz, int[][][] indexesPredecessores) {
@@ -112,6 +134,7 @@ public class SugestaoEscrita {
         indexesPredecessores[0][0][0] = -1;
         indexesPredecessores[0][0][1] = -1;
     }
+
 }
 
 class DistanciaEntreTeclas {

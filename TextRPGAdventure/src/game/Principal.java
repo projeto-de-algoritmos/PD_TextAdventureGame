@@ -9,19 +9,21 @@ import game.servicos.Arquivo;
 import grafo.Grafo;
 import grafo.Vertice;
 import grafo.navegacao.Navegacao;
+import services.SugestaoEscrita;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 public class Principal {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
 
         JogoController jogo = JogoController.getJogo();
 
-        Area salaEscura = new Area("Sala Escura", "Você se encontra em uma sala repleta de sombras e pouca iluminação. Suas mãos encontram-se machucadas e você sente o chão frio sob seus pés.");
+        Area salaEscura = new Area("Sala", "Você se encontra em uma sala repleta de sombras e pouca iluminação. Suas mãos encontram-se machucadas e você sente o chão frio sob seus pés.");
 
         ItemDecorativo espelho = new ItemDecorativo("Espelho", "Um espelho quebrado que te mostra seu reflexo borrado.", false);
 
@@ -41,7 +43,7 @@ public class Principal {
         salaEscura.addItem(caixa);
         salaEscura.addItem(rastreador);
 
-        Area banheiroEscuro = new Area("Banheiro Escuro", "Um banheiro com cheiro pútrido. O chão parece estar coberto por uma espécie de gosma pegajosa.");
+        Area banheiroEscuro = new Area("Banheiro", "Um banheiro com cheiro pútrido. O chão parece estar coberto por uma espécie de gosma pegajosa.");
 
         Area garagem = new Area("Garagem", "Um leve cheiro de óleo de motor, e várias bugigangas espalhadas pelo chão, mas nada muito interessante.");
         Area porao = new Area("Porão", "Um porão completamente escuro, cheios de madeiras velhas e outras coisas descartadas. Alguma coisa parece brilhar na escuridão.");
